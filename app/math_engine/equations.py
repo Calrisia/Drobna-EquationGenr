@@ -55,7 +55,9 @@ class Substitution(Method):
         if self.level == 'easy':
             eq = sp.Eq(self.val_a * (self.val_r ** (2*x)) + self.val_b * (self.val_r ** x), -self.val_c)
         else:
-            eq = AdvancedEquation([[self.val_a], '*', [self.val_r, 2*x], '+',[self.val_b], '*', [self.val_r, x]], [-self.val_c], [self.val_x1, self.val_x2], 'S')
+            self.exponents = [self.val_a, self.val_b, self.val_c, self.val_r, x]
+            self.roots = [self.val_x1, self.val_x2]
+            eq = AdvancedEquation(self)
 
         return eq, [self.val_x1, self.val_x2]
     
@@ -80,7 +82,9 @@ class Matching_bases(Method):
         if self.level == 'easy':
             eq = sp.Eq(self.val_r ** x, self.val_t)
         else:
-            eq = AdvancedEquation([[self.val_r, x]], [[self.val_t]], [self.val_x], 'MB') # [Number, sign, number, exponent]
+            self.exponents = [self.val_r, x] # not adding right side, since it is just the result of the left side
+            self.roots = [self.val_x]
+            eq = AdvancedEquation(self) # [Number, sign, number, exponent]
 
         return eq, [self.val_x]
     
@@ -118,7 +122,9 @@ class Logarithm(Method): # prerobit
             print('root:', log10(number_right)/log10(number_left))
 
         else:
-            eq = AdvancedEquation([[number_left, x]], [[number_right]], [self.val_x], 'L')
+            self.exponents = [number_left, x, number_right] # need number right, since val_x is most likely irrational
+            self.roots = [self.val_x]
+            eq = AdvancedEquation(self)
 
         return eq, [self.val_x]
     
@@ -127,23 +133,26 @@ class Logarithm(Method): # prerobit
 
 
 class AdvancedEquation:
-    def __init__(self, left_side, right_side, roots, type):
-        self.left_side = left_side
-        self.right_side = right_side
-        self.roots = roots
-        self.type = type
+    def __init__(self, method: Method):
+        self.coefitients = method.exponents
+        self.roots = method.roots
 
-        plus_coef = random.randint(1, 3)
-        complex_exp = random.randint(1, 3)
+        if len(self.coefitients) == 2:
+            self.equation = self.modify_matching_bases()
+        elif len(self.coefitients) == 3:
+            self.equation = self.modify_logarithm()
+        else:
+            self.equation = self.modify_substitution()
 
-        signs_exp = random.choices(['+', '-', '*', '/'], k=complex_exp)
-        signs_coef = random.choices(['+', '-', '*', '/'], k=plus_coef)
+        return self.equation
+    
+    def modify_matching_bases(self):
+        modifs_signs_exp = random.choices(['+', '-', '*', '/'], random.randint(1, 3))
+        modifs_signs_base = random.choices(['+', '-', '*', '/'], random.randint(2, 6))
 
-
-        for coefs in range(random.randint(1, 3)):
-            self.left_side.append(random.choice(['+', '-', '*', '/']))
-            self.left_side.append([random.randint(2, 5), random.randint(2, 5) if random.randint(0, 2) == 1 else None])
-
+        for sign in modifs_signs_base: # v cykle sa bude ku znamienku pridavat randomne cislo, dvojica sa ulozi a 
+            pass                       # prepocita sa prava strana (alebo sa dako tiez ulozi, vymyslet)
+            
 
 
 
