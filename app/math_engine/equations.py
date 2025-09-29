@@ -12,7 +12,7 @@ class Method(ABC):
 
     @abstractmethod
     def create(self):
-        '''Creates equation and its roots'''
+        '''Creates simple equation and its roots'''
         return sp.Eq(), list()
 
     @abstractmethod
@@ -20,11 +20,24 @@ class Method(ABC):
         '''list of steps to solve equation'''
         return list()
     
+    @abstractmethod
+    def create_advanced(self):
+        '''Creates advanced equation and its roots'''
+        return sp.Eq(), list()
+    
     def get_roots(self):
         return self.roots
     
     def get_equation(self):
         return self.equation
+    
+
+
+def nmul(a, b):
+    return -(a * b)
+
+def ndiv(a, b):
+    return -(a / b)
 
 
 class Substitution(Method):
@@ -57,11 +70,12 @@ class Substitution(Method):
         else:
             self.exponents = [self.val_a, self.val_b, self.val_c, self.val_r, x]
             self.roots = [self.val_x1, self.val_x2]
-            eq = AdvancedEquation(self)
+            eq = self.create_advanced()
 
         return eq, [self.val_x1, self.val_x2]
     
-    
+    def create_advanced(self):
+        pass
 
     def solving_steps(self):
         return []
@@ -84,13 +98,41 @@ class Matching_bases(Method):
         else:
             self.exponents = [self.val_r, x] # not adding right side, since it is just the result of the left side
             self.roots = [self.val_x]
-            eq = AdvancedEquation(self) # [Number, sign, number, exponent]
+            eq = self.create_advanced() # [Number, sign, number, exponent]
 
         return eq, [self.val_x]
     
+    def create_advanced(self):
+        pass 
+
     def solving_steps(self):
         return []
-        
+    
+    def create_advanced(self):
+        modifs_exp_signs = random.choices([add, sub, mul, nmul, truediv, ndiv], k=random.randint(1, 3))
+        modifs_base_signs = random.choices([add, sub, mul, nmul, truediv, ndiv], k=random.randint(2, 6))
+
+        right_exp = self.val_x
+        symb_x = sp.symbols('x')
+        for function in modifs_exp_signs:
+            n = random.randint(1,4)
+            if function(right_exp, n) *1000 == int(function(right_exp, n) *1000):
+                right_exp = function(right_exp, n)
+            else:
+                n = sp.symbols(f'{n}')
+                right_exp = function(right_exp, n)
+            right_exp = function(right_exp, n)
+            symb_x = function(symb_x, n)
+       
+        left_side = self.val_r ** symb_x
+        right_side = self.val_r ** right_exp
+        for function in modifs_base_signs:
+            n = random.randint(1,11)
+            right_side = function(right_side, n)
+            left_side = function(left_side, n)
+
+        eq = sp.Eq(left_side, right_side)
+        return eq, [self.val_x]
 
 class Logarithm(Method): # prerobit
     def create(self):
@@ -124,55 +166,18 @@ class Logarithm(Method): # prerobit
         else:
             self.exponents = [number_left, x, number_right] # need number right, since val_x is most likely irrational
             self.roots = [self.val_x]
-            eq = AdvancedEquation(self)
+            eq = self.create_advanced()
 
         return eq, [self.val_x]
     
+    def create_advanced(self):
+        pass
+
     def solving_steps(self):
         return []
 
-
-class AdvancedEquation:
-    def __init__(self, method: Method):
-        self.coefitients = method.exponents
-        self.roots = method.roots
-
-        if len(self.coefitients) == 2:
-            self.equation = self.modify_matching_bases()
-        elif len(self.coefitients) == 3:
-            self.equation = self.modify_logarithm()
-        else:
-            self.equation = self.modify_substitution()
-
-        return self.equation
     
-    def modify_matching_bases(self):
-        modifs_signs_exp = random.choices(['+', '-', '*', '/'], random.randint(1, 3))
-        modifs_signs_base = random.choices(['+', '-', '*', '/'], random.randint(2, 6))
-
-        for sign in modifs_signs_base: # v cykle sa bude ku znamienku pridavat randomne cislo, dvojica sa ulozi a 
-            pass                       # prepocita sa prava strana (alebo sa dako tiez ulozi, vymyslet)
-            
-
-
-
         
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -325,3 +330,4 @@ class AdvancedEquation:
 #         else:
 #             pass
             
+
