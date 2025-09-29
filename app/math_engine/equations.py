@@ -110,26 +110,29 @@ class Matching_bases(Method):
     
     def create_advanced(self):
         modifs_exp_signs = random.choices([add, sub, mul, nmul, truediv, ndiv], k=random.randint(1, 3))
-        modifs_base_signs = random.choices([add, sub, mul, nmul, truediv, ndiv], k=random.randint(2, 6))
+        modifs_base_signs = random.choices([add, sub, mul, nmul, truediv, ndiv], k=random.randint(1, 4))
 
         right_exp = self.val_x
         symb_x = sp.symbols('x')
         for function in modifs_exp_signs:
-            n = random.randint(1,4)
-            if function(right_exp, n) *1000 == int(function(right_exp, n) *1000):
-                right_exp = function(right_exp, n)
-            else:
-                n = sp.symbols(f'{n}')
-                right_exp = function(right_exp, n)
+            n = random.randint(1,3)
+            if isinstance(function(right_exp, n), int) or isinstance(function(right_exp, n), float):
+                if 1000000 < abs(function(right_exp, n)) < 0.001 or int(function(right_exp, n)*1000) == function(right_exp, n)*1000:
+                    n = sp.symbols(f'{n}')
             right_exp = function(right_exp, n)
             symb_x = function(symb_x, n)
-       
+            
         left_side = self.val_r ** symb_x
         right_side = self.val_r ** right_exp
         for function in modifs_base_signs:
-            n = random.randint(1,11)
+            n = random.randint(1,6)
+            
+            if isinstance(function(right_exp, n), int) or isinstance(function(right_exp, n), float):
+                if 1000000 < abs(function(right_exp, n)) < 0.001 or int(function(right_exp, n)*1000) == function(right_exp, n)*1000:
+                    n = sp.symbols(f'{n}')
             right_side = function(right_side, n)
             left_side = function(left_side, n)
+                
 
         eq = sp.Eq(left_side, right_side)
         return eq, [self.val_x]
