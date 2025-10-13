@@ -20,18 +20,14 @@ def test_logarithm():
 #     test_substitution()
 #     print('---')
 
-print('*********************************************************************')
-for i in range(50):
-    test_matching_bases()
-    print('---')
-
 # print('*********************************************************************')
 # for i in range(50):
-#     test_logarithm()
+#     test_matching_bases()
 #     print('---')
 
+print('*********************************************************************')
+for i in range(50):
+    test_logarithm()
+    print('---')
 
-# for i in range(400):
-#     if 16**(i/100) == int(16**(i/100)):
-#         print('exp',(i/100))
-#         print('power',16**(i/100))
+
