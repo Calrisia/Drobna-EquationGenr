@@ -16,7 +16,7 @@ class CreateEquationForm(FlaskForm):
     submit = SubmitField('Create')
 
 class CreateFunctionForm(FlaskForm):
-    type = SelectField('Type', choices=[('logarithmic', 'logarithmic functions'), ('exponential', 'exponential functions'), ('random functions', 'random functions')])
+    type = SelectField('Type', choices=[('logarithmic functions', 'logarithmic functions'), ('exponential functions', 'exponential functions'), ('random functions', 'random functions')])
     number = IntegerField('Number', validators=[DataRequired()])
     submit = SubmitField('Create')
 

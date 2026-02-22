@@ -57,39 +57,6 @@ class Exponential(Function):
         return self.parameters
     
     
-    # def get_graph(self):
-    #     # Base
-    #     b = self.coefficients['val_bn'] / self.coefficients['val_bd']
-    #     a = self.coefficients['val_a']
-    #     n = self.coefficients['val_n']
-    #     v = self.coefficients['val_v']
-    #     k = self.coefficients['val_k']
-
-    #     # Function
-    #     f = lambda x: a * b**(n*x + v) + k
-
-    #     # ---- Maximum curvature (correct formula) ----
-    #     C = a * n * np.log(b)
-    #     u = 1 / (np.sqrt(2) * C)
-    #     x_bend = (np.log(u) / np.log(b) - v) / n
-
-    #     # ---- Adjusted x range ----
-    #     x_start = x_bend - b
-    #     x_end   = x_bend + b
-    #     x = np.linspace(x_start, x_end, 400)
-
-    #     # ---- Plot ----
-    #     fig, ax = plt.subplots(figsize=(8, 5))
-    #     ax.plot(x, f(x), label=rf'$ {self.get_latex_formula()} $')
-
-    #     ax.set_xlabel('x')
-    #     ax.set_ylabel('f(x)')
-    #     ax.set_title('Exponential Function')
-    #     ax.grid(True)
-    #     ax.legend()
-
-    #     self.graph = fig
-    #     return self.graph
 
     def get_graph(self):
 

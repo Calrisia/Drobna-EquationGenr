@@ -1,6 +1,12 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
+  <meta name="description" content="ExpoLoGen is a smart and practical web app designed to help you generate, explore, and work with
+  exponential and logarithmic equations and functions in a fast and organized way. Whether you’re a student
+  preparing for practice, a teacher building worksheets, or just revising key topics, ExpoLoGen gives you everything you need in one place.">
+
+  <meta name="keywords" content="math, matematika, matika, problem generator, generovanie prikladov, generovanie príkladov, generator prikladov, generátor príkladov, exponential equations, exponencialne rovnice, exponenciálne rovnice, logarithmic equations, logaritmické rovnice, logaritmické rovnice, exponential functions, exponencialne funkcie, exponenciálne funkcie, logarithmic functions, logaritmické funkcie, logarithmic functions, logaritmické funkcie, mathematical functions, matematické funkcie, mathematical functions, matematické funkcie, generator rovnic, generátor rovníc, matematická pomôcka, didaktická pomôcka, exponential equations generator, generator exponencialnych rovnic, generátor exponenciálnych rovníc, logarithmic equations generator, generator logaritmickych rovnic, generátor logaritmických rovníc, exponential functions generator, generator exponencialnych funkcii, generátor exponenciálnych funkcií, logarithmic functions generator, generator logaritmickych funkcii, generátor logaritmických funkcií">
   <meta charset="UTF-8">
   <title>{% block title %}ExpoLoGen{% endblock %}</title>
   <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
@@ -8,48 +14,49 @@
 
   <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
+
 <body>
 
-<!-- Sidebar toggle -->
-<input type="checkbox" id="sidebar-toggle">
+  <!-- Sidebar toggle -->
+  <input type="checkbox" id="sidebar-toggle">
 
-<!-- Overlay -->
-<label for="sidebar-toggle" id="overlay"></label>
+  <!-- Overlay -->
+  <label for="sidebar-toggle" id="overlay"></label>
 
-<!-- Sidebar -->
-<div id="sidebar" class="{{ active }}">
-  <p class="sidebar-item {{ active }}" >
-    <a href="{{ url_for('home') }}">Home</a>
-  </p>
-  <p class="sidebar-item {{ active }}" >
-    <a href="{{ url_for('equations') }}">Equations</a>
-  </p>
+  <!-- Sidebar -->
+  <div id="sidebar" class="{{ active }}">
+    <p class="sidebar-item {{ active }}">
+      <a href="{{ url_for('home') }}">Home</a>
+    </p>
+    <p class="sidebar-item {{ active }}">
+      <a href="{{ url_for('equations') }}">Equations</a>
+    </p>
 
-  <div class="generate">
-    <p class="sidebar-item {{ active }}" >Generate</p>
-    <div class="generate-submenu">
-      <p class="submenu-item ">
-        <a href="{{ url_for('generate_equations') }}">Equations</a>       
-      </p>
+    <div class="generate">
+      <p class="sidebar-item {{ active }}">Generate</p>
+      <div class="generate-submenu">
+        <p class="submenu-item ">
+          <a href="{{ url_for('generate_equations') }}">Equations</a>
+        </p>
 
-      <p class="submenu-item {{ active }}">
-        <a href="{{ url_for('generate_functions') }}">Functions</a>
-      </p>
+        <p class="submenu-item {{ active }}">
+          <a href="{{ url_for('generate_functions') }}">Functions</a>
+        </p>
 
+      </div>
     </div>
+
+    <p class="sidebar-item {{ active }}">
+      <a href="{{ url_for('functions') }}">Functions</a>
+    </p>
   </div>
 
-  <p class="sidebar-item {{ active }}" >
-    <a href="{{ url_for('functions') }}">Functions</a>
-  </p>
-</div>
-
-<!-- Header -->
-<div class="header {{ active }}">
+  <!-- Header -->
+  <div class="header {{ active }}">
     <div class="left">
       <label for="sidebar-toggle" class="sidebar-icon {{ active }}">☰</label>
     </div>
-  
+
     <div class="center">
       <p class="title {{ active }}">
         {% if active == "equations" %}Equations
@@ -61,29 +68,21 @@
         {% else %}ExpoLoGen{% endif %}
       </p>
     </div>
-  
+
     <div class="right">
-      <a class="hover-item" href="{{ url_for('export_pdf_options') }}">Export to PDF</a>      
+      <a class="hover-item" href="{{ url_for('export_pdf_options') }}">Export to PDF</a>
       <div class="account-wrapper">
         {% if active == 'functions' or active == 'function_details' or active == 'home' %}
-          <img
-              src="{{ url_for('static', filename='images/account-fun.png') }}"
-              alt="Account"
-              class="account-icon"
-              id="accountToggle"
-          />
+        <img src="{{ url_for('static', filename='images/account-fun.png') }}" alt="Account" class="account-icon"
+          id="accountToggle" />
         {% else %}
-          <img
-            src="{{ url_for('static', filename='images/account.png') }}"
-            alt="Account"
-            class="account-icon"
-            id="accountToggle"
-          />
+        <img src="{{ url_for('static', filename='images/account.png') }}" alt="Account" class="account-icon"
+          id="accountToggle" />
         {% endif %}
         <div class="account-dropdown" id="accountDropdown">
           <p class="account-username">
-              Logged in as<br>
-              <strong>{{ current_user.username }}</strong>
+            Logged in as<br>
+            <strong>{{ current_user.username }}</strong>
           </p>
           <a href="{{ url_for('logout') }}" class="logout-btn">
             Log out
@@ -92,44 +91,45 @@
       </div>
 
     </div>
-</div>
-  
-<!-- Main content -->
-<main>
-  <!-- Flash messages -->
-  {% with messages = get_flashed_messages(with_categories=true) %}
+  </div>
+
+  <!-- Main content -->
+  <main>
+    <!-- Flash messages -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
     {% if messages %}
-      <div class="flash-container">
-        {% for category, message in messages %}
-          <div class="alert alert-{{ category }}">
-            {{ message }}
-            <span class="close-btn" onclick="this.parentElement.style.display='none';">&times;</span>
-          </div>
-        {% endfor %}
+    <div class="flash-container">
+      {% for category, message in messages %}
+      <div class="alert alert-{{ category }}">
+        {{ message }}
+        <span class="close-btn" onclick="this.parentElement.style.display='none';">&times;</span>
       </div>
+      {% endfor %}
+    </div>
     {% endif %}
-  {% endwith %}
+    {% endwith %}
 
-  {% block content %}{% endblock %}
-</main>
+    {% block content %}{% endblock %}
+  </main>
 
 
-<script>
-  const toggle = document.getElementById("accountToggle");
-  const dropdown = document.getElementById("accountDropdown");
+  <script>
+    const toggle = document.getElementById("accountToggle");
+    const dropdown = document.getElementById("accountDropdown");
 
-  if (toggle && dropdown) {
-    toggle.addEventListener("click", (e) => {
-      e.stopPropagation();
-      dropdown.classList.toggle("show");
-    });
+    if (toggle && dropdown) {
+      toggle.addEventListener("click", (e) => {
+        e.stopPropagation();
+        dropdown.classList.toggle("show");
+      });
 
-    document.addEventListener("click", () => {
-      dropdown.classList.remove("show");
-    });
-  }
-</script>
+      document.addEventListener("click", () => {
+        dropdown.classList.remove("show");
+      });
+    }
+  </script>
 
 
 </body>
+
 </html>

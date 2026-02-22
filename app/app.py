@@ -1,46 +1,24 @@
-from flask import Flask, jsonify, render_template, redirect, url_for, send_file
 from models import db, User, Equation, Function
-from forms import (
-    CreateEquationForm,
-    CreateFunctionForm,
-    RegistrationForm,
-    LoginForm
-)
+from forms import CreateEquationForm, CreateFunctionForm, RegistrationForm, LoginForm
+from utils import latex_to_png, latex_to_png_eq
+
 from flask_migrate import Migrate
-from flask_login import (
-    LoginManager,
-    current_user,
-    login_required,
-    login_user,
-    logout_user
-)
+from flask_login import LoginManager, current_user, login_required, login_user, logout_user
+
 import random
-from flask import Flask, Response, url_for, render_template, request
-from flask import Flask, Response, url_for, render_template
-import io
+from flask import Flask, Response, url_for, render_template, request, jsonify, redirect, flash
+
 import os
-import matplotlib
-matplotlib.use("Agg")  # server-safe
-import matplotlib.pyplot as plt
-from flask_login import login_required, current_user
+import matplotlib 
+matplotlib.use("Agg")
 import pdfkit
 
-
-
 from datetime import date
-from werkzeug.security import check_password_hash
 
 import math_engine.equations.logarithmic as log
 import math_engine.equations.exponential as ex
 import math_engine.functions.functions as func
 import sympy as sp
-
-from utils import latex_to_png, latex_to_png_eq
-from werkzeug.security import generate_password_hash, check_password_hash
-
-from flask import flash
-
-
 
 
 WKHTMLTOPDF_PATH = os.path.join(os.path.dirname(__file__), "wkhtmltopdf.exe")
@@ -147,6 +125,9 @@ def generate_equations():
         if form.number.data <= 0:
             flash("Please enter a positive number", "danger")
             return redirect(url_for('generate_equations'))
+        if form.number.data > 20:
+            flash("Please enter a number between 1 and 20", "danger")
+            return redirect(url_for('generate_equations'))
         for _ in range(form.number.data):
             if form.type.data == 'logarithmic - solved by substitution':
                 equation = log.Substitution(form.level.data)
@@ -196,19 +177,21 @@ def generate_functions():
             return redirect(url_for('generate_functions'))
         if form.number.data <= 0:
             flash("Please enter a positive number", "danger")
+        if form.number.data > 20:
+            flash("Please enter a number in range of 1 to 20", "danger")
             return redirect(url_for('generate_functions'))
         
         for _ in range(form.number.data):
-            if form.type.data == 'random functions':
+            if form.type.data == 'random functions' or form.type.data == 'random':
                 type_data = random.choice(['exponential functions', 'logarithmic functions'])
                 function = func.Exponential() if type_data == 'exponential functions' else func.Logarithmic()
-            elif form.type.data == 'exponential functions':
+            elif form.type.data == 'exponential functions' or form.type.data == 'exponential':
                 function = func.Exponential()
                 type_data = None
-            elif form.type.data == 'logarithmic functions':
+            elif form.type.data == 'logarithmic functions' or form.type.data == 'logarithmic':
                 function = func.Logarithmic()
                 type_data = None
-            print(form.type.data)
+            print(form.type.data)  
             new_function = Function(id_user=current_user.id,
                                     type= type_data if type_data is not None else form.type.data,
                                     val_a=int(function.get_coefficients()['val_a']),
@@ -490,26 +473,6 @@ def export_pdf_generate():
                     "steps": eq.get_steps()
                 })
 
-        # else:
-        #     equations_for_pdf = []
-        #     for _ in range(limit):
-        #         if gen_type == "logarithmic-substitute":
-        #             eq = log.Substitution(gen_level)
-        #         elif gen_type == "logarithmic-mixed":
-        #             eq = log.Mixed_methods(gen_level)
-        #         elif gen_type == "exponential-substitute":
-        #             eq = ex.Substitution(gen_level)
-        #         elif gen_type == "exponential-match":
-        #             eq = ex.Matching_bases(gen_level)
-        #         elif gen_type == "exponential-log":
-        #             eq = ex.Logarithm(gen_level)
-        #         else:
-        #             continue
-        #         equations_for_pdf.append({
-        #             "equation": latex_to_png_eq(eq.get_equation()),
-        #             "roots": str(eq.get_roots()),
-        #             "steps": eq.get_steps()
-        #         })
 
         html = render_template(
             f"pdf/{template}_equations.html",
