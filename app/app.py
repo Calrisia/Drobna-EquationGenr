@@ -11,8 +11,11 @@ from flask import Flask, Response, url_for, render_template, request, jsonify, r
 import os
 import matplotlib 
 matplotlib.use("Agg")
-from xhtml2pdf import pisa
+from reportlab.lib.pagesizes import A4
+from reportlab.lib.styles import getSampleStyleSheet
+from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer
 import io
+
 
 from datetime import date
 
@@ -529,7 +532,22 @@ def export_pdf_generate():
 
     # ------------------ GENERATE PDF ------------------
     pdf_buffer = io.BytesIO()
-    pisa.CreatePDF(io.StringIO(html), dest=pdf_buffer)
+    doc = SimpleDocTemplate(pdf_buffer, pagesize=A4)
+    styles = getSampleStyleSheet()
+    story = []
+
+    if export_type == "equations":
+        for eq in equations_for_pdf:
+            story.append(Paragraph(f"Equation: {eq['roots']}", styles['Heading2']))
+            for step in eq['steps']:
+                story.append(Paragraph(str(step), styles['Normal']))
+            story.append(Spacer(1, 20))
+    else:
+        for fn in functions_for_pdf:
+            story.append(Paragraph(f"Type: {fn['type']}", styles['Heading2']))
+            story.append(Spacer(1, 20))
+
+    doc.build(story)
     pdf = pdf_buffer.getvalue()
 
     # Return PDF to client browser
