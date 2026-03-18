@@ -41,10 +41,12 @@ def latex_to_png_eq(formula: str, fontsize=7):
     )
     ax.axis('off')
     try:
-        fig.tight_layout(pad=0)
-    except Exception:
-        pass  # ignore layout warning, continue rendering
+        fig.tight_layout(pad=1.5)  # Give some breathing room
+    except UserWarning:
+        pass  # Gracefully skip if layout still can't fit
 
+# OR use constrained_layout at figure creation time instead:
+    fig = plt.figure(constrained_layout=True)
     buf = io.BytesIO()
     fig.savefig(buf, format='png', dpi=250, bbox_inches='tight', transparent=True)
     plt.close(fig)
