@@ -1,4 +1,4 @@
-from math_engine.equations.root import Method, nmul, ndiv
+from app.math_engine.equations.root import Method, nmul, ndiv
 from operator import sub, add, mul, truediv
 import sympy as sp
 import random

@@ -1,10 +1,8 @@
-from math_engine.functions.root import Function
+from app.math_engine.functions.root import Function
 import sympy as sp
 import random
 import numpy as np
 import matplotlib.pyplot as plt
-import io
-from scipy.optimize import brentq
 
 
 class Exponential(Function):

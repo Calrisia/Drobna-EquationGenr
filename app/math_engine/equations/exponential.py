@@ -1,8 +1,7 @@
-from math_engine.equations.root import Method, ndiv, nmul
+from app.math_engine.equations.root import Method, ndiv, nmul
 
-from math import sqrt, log10
-from operator import sub, add, mul, truediv, pow
-from fractions import Fraction
+from math import log10
+from operator import sub, add, mul, truediv
 import sympy as sp
 import random
 
