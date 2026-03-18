@@ -1,6 +1,7 @@
 from app.models import db, User, Equation, Function
 from app.forms import CreateEquationForm, CreateFunctionForm, RegistrationForm, LoginForm
 from app.utils import latex_to_png, latex_to_png_eq
+from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
 
 from flask_migrate import Migrate
 from flask_login import LoginManager, current_user, login_required, login_user, logout_user
@@ -538,56 +539,49 @@ def export_pdf_generate():
         )
 
     # ------------------ GENERATE PDF ------------------
+# ------------------ GENERATE PDF ------------------
     pdf_buffer = io.BytesIO()
-    doc = SimpleDocTemplate(pdf_buffer, pagesize=A4, leftMargin=2*cm, rightMargin=2*cm)
+    doc = SimpleDocTemplate(pdf_buffer, pagesize=A4, leftMargin=2*cm, rightMargin=2*cm, topMargin=2*cm)
     styles = getSampleStyleSheet()
+
+    title_style = ParagraphStyle(
+        'TestTitle',
+        parent=styles['Title'],
+        fontSize=24,
+        alignment=1,  # centered
+        spaceAfter=30
+    )
+
     story = []
+    story.append(Paragraph("Test", title_style))
 
     if export_type == "equations":
         for i, eq in enumerate(equations_for_pdf, 1):
-            story.append(Paragraph(f"Equation {i}", styles['Heading2']))
-            story.append(Spacer(1, 6))
+            story.append(Paragraph(f"{i}.", styles['Normal']))
+            story.append(Spacer(1, 4))
 
-            # eq['equation'] is already a base64 PNG from latex_to_png_eq
             img_data = base64.b64decode(eq['equation'].split(',')[1] if ',' in eq['equation'] else eq['equation'])
             img_buffer = io.BytesIO(img_data)
-            story.append(RLImage(img_buffer, width=12*cm, height=2*cm))
-            story.append(Spacer(1, 6))
-
-            story.append(Paragraph("Steps:", styles['Heading3']))
-            for step in eq['steps']:
-                if not step.strip():
-                    continue
-                # Convert each LaTeX step to image
-                step_img_b64 = latex_to_png_eq(step)
-                step_data = base64.b64decode(step_img_b64.split(',')[1] if ',' in step_img_b64 else step_img_b64)
-                step_buffer = io.BytesIO(step_data)
-                story.append(RLImage(step_buffer, width=12*cm, height=1.5*cm))
-                story.append(Spacer(1, 4))
-
-            story.append(Paragraph(f"Roots: {eq['roots']}", styles['Normal']))
-            story.append(Spacer(1, 20))
+            story.append(RLImage(img_buffer, width=14*cm, height=3*cm))
+            story.append(Spacer(1, 16))
 
     else:
         for i, fn in enumerate(functions_for_pdf, 1):
-            story.append(Paragraph(f"Function {i} ({fn['type']})", styles['Heading2']))
-            story.append(Spacer(1, 6))
+            story.append(Paragraph(f"{i}.", styles['Normal']))
+            story.append(Spacer(1, 4))
 
             img_data = base64.b64decode(fn['img'].split(',')[1] if ',' in fn['img'] else fn['img'])
             img_buffer = io.BytesIO(img_data)
-            story.append(RLImage(img_buffer, width=12*cm, height=2*cm))
-            story.append(Spacer(1, 20))
+            story.append(RLImage(img_buffer, width=14*cm, height=3*cm))
+            story.append(Spacer(1, 16))
 
     doc.build(story)
     pdf = pdf_buffer.getvalue()
 
-    # Return PDF to client browser
     return Response(
         pdf,
         mimetype="application/pdf",
-        headers={
-            "Content-Disposition": "attachment; filename=export.pdf"
-        }
+        headers={"Content-Disposition": "attachment; filename=export.pdf"}
     )
 
 # ---------------- API ----------------
