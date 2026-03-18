@@ -29,7 +29,7 @@ app = Flask(__name__)
 
 # ---------------- CONFIG ----------------
 
-app.config['SQLALCHEMY_DATABASE_URL'] = os.environ.get('POSTGRES_URL') or \
+app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('POSTGRES_URL') or \
     os.environ.get('DATABASE_URL') or \
     'sqlite:///local.db'  # fallback for local dev only
 
