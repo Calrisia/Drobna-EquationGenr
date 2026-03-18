@@ -11,7 +11,7 @@ from flask import Flask, Response, url_for, render_template, request, jsonify, r
 import os
 import matplotlib 
 matplotlib.use("Agg")
-import pdfkit
+from weasyprint import HTML as WeasyprintHTML
 
 from datetime import date
 
@@ -19,10 +19,6 @@ import app.math_engine.equations.logarithmic as log
 import app.math_engine.equations.exponential as ex
 import app.math_engine.functions.functions as func
 import sympy as sp
-
-
-WKHTMLTOPDF_PATH = os.path.join(os.path.dirname(__file__), "wkhtmltopdf.exe")
-pdfkit_config = pdfkit.configuration(wkhtmltopdf=WKHTMLTOPDF_PATH)
 
 
 app = Flask(__name__)
@@ -64,8 +60,6 @@ def login():
         if user is None or not user.check_password(form.password.data):
             flash("Invalid username or password", "danger")
             return redirect(url_for('login'))
-
-
 
         login_user(user)
         flash(f"Welcome back, {user.username}!", "success")
@@ -109,13 +103,11 @@ def register():
         new_user = User(username=form.username.data)
         new_user.set_password(form.password.data)
 
-
         db.session.add(new_user)
         db.session.commit()
 
         flash("Registration successful! Please log in.", "success")
         return redirect(url_for('login'))
-
 
     return render_template('register.html', form=form)
 
@@ -164,7 +156,6 @@ def generate_equations():
             db.session.commit()
         
         return redirect(url_for('equations'))
-
 
     return render_template(
         "generate.html",
@@ -216,7 +207,6 @@ def generate_functions():
             db.session.commit()
         
         return redirect(url_for('functions'))
-
 
     return render_template(
         "generate.html",
@@ -325,7 +315,6 @@ def functions():
             'val_k': f_db.val_k,
             'val_px': sp.sympify(f_db.val_px) if f_db.val_px not in (None, 'None') else None,
             'val_py': sp.sympify(f_db.val_py) if f_db.val_py not in (None, 'None') else None
-
         }
 
         print('=====================================',f_db.type)
@@ -399,7 +388,6 @@ def export_pdf_options():
     )
 
 
-
 @login_required
 @app.route("/export/pdf/generate")
 def export_pdf_generate():
@@ -443,7 +431,7 @@ def export_pdf_generate():
             # convert to dicts for PDF template
             equations_for_pdf = [
                 {
-                    "equation": latex_to_png_eq(e.equation),  # use e.equation, NOT get_equation()
+                    "equation": latex_to_png_eq(e.equation),
                     "roots": str(e.roots),
                     "steps": e.steps.split('\n')
                 }
@@ -452,7 +440,6 @@ def export_pdf_generate():
 
         # ---------- GENERATED EQUATIONS ----------
         else:
-            
             equations_for_pdf = []
             for _ in range(limit):
                 if gen_type == "logarithmic - solved by substitution":
@@ -474,13 +461,11 @@ def export_pdf_generate():
                 else:
                     continue
 
-
-                equations_for_pdf.append({  # convert to dicts for PDF templat
-                    "equation": latex_to_png_eq(eq.get_equation()),  # generated objects still use get_equation()
+                equations_for_pdf.append({
+                    "equation": latex_to_png_eq(eq.get_equation()),
                     "roots": str(eq.get_roots()),
                     "steps": eq.get_steps()
                 })
-
 
         html = render_template(
             f"pdf/{template}_equations.html",
@@ -542,17 +527,7 @@ def export_pdf_generate():
         )
 
     # ------------------ GENERATE PDF ------------------
-    options = {
-        "enable-local-file-access": "",  # safe fallback
-        "quiet": ""
-    }
-
-    pdf = pdfkit.from_string(
-        html,
-        False,
-        configuration=pdfkit_config,
-        options=options
-    )
+    pdf = WeasyprintHTML(string=html, base_url=request.base_url).write_pdf()
 
     # Return PDF to client browser
     return Response(
@@ -561,7 +536,6 @@ def export_pdf_generate():
         headers={
             "Content-Disposition": "attachment; filename=export.pdf"
         }
-        
     )
 
 # ---------------- API ----------------
@@ -572,8 +546,7 @@ def api_equations():
     return jsonify([
         {
             "id": e.id_equation,
-            # Use plain string for display in the picker
-            "label": e.equation  # previously maybe returned sympy object
+            "label": e.equation
         }
         for e in equations
     ])
@@ -598,8 +571,6 @@ def api_functions():
             'val_py': f.val_py if f.val_py not in (None, 'None') else None
         }
 
-        # For display in picker, use plain string
-        label = ""
         if f.type == "logarithmic":
             label = str(func.Logarithmic(coefs).get_latex_formula())
         else:
@@ -611,10 +582,6 @@ def api_functions():
         })
 
     return jsonify(result)
-
-
-
-
 
 
 # ---------------- LOGOUT ----------------

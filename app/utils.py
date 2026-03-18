@@ -40,10 +40,7 @@ def latex_to_png_eq(formula: str, fontsize=7):
         va='center'
     )
     ax.axis('off')
-    try:
-        fig.tight_layout(pad=1.5)  # Give some breathing room
-    except UserWarning:
-        pass  # Gracefully skip if layout still can't fit
+  # Gracefully skip if layout still can't fit
 
 # OR use constrained_layout at figure creation time instead:
     fig = plt.figure(constrained_layout=True)
