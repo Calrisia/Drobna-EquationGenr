@@ -6,16 +6,15 @@ def latex_to_png(formula: str, fontsize=7):
     """
     Convert LaTeX formula to base64 PNG for embedding in HTML.
     """
-    fig, ax = plt.subplots(figsize=(0.1, 0.1))
+    fig, ax = plt.subplots(figsize=(4, 0.6), constrained_layout=True)
     ax.text(
-        0.1, 0.1,
+        0.5, 0.5,
         f"${formula}$",
         fontsize=fontsize,
         ha='center',
         va='center'
     )
     ax.axis('off')
-    fig.tight_layout(pad=0)
 
     buf = io.BytesIO()
     fig.savefig(buf, format='png', dpi=250, bbox_inches='tight', transparent=True)
@@ -26,24 +25,20 @@ def latex_to_png(formula: str, fontsize=7):
     return f"data:image/png;base64,{img_base64}"
 
 
-### fix for equations
 def latex_to_png_eq(formula: str, fontsize=7):
     """
     Convert LaTeX formula to base64 PNG for embedding in HTML.
     """
-    fig, ax = plt.subplots(figsize=(0.1, 0.1))
+    fig, ax = plt.subplots(figsize=(4, 0.6), constrained_layout=True)
     ax.text(
-        0.1, 0.1,
+        0.5, 0.5,
         f"${formula}$",
         fontsize=fontsize,
         ha='center',
         va='center'
     )
     ax.axis('off')
-  # Gracefully skip if layout still can't fit
 
-# OR use constrained_layout at figure creation time instead:
-    fig = plt.figure(constrained_layout=True)
     buf = io.BytesIO()
     fig.savefig(buf, format='png', dpi=250, bbox_inches='tight', transparent=True)
     plt.close(fig)
