@@ -36,7 +36,6 @@ pyphen==0.17.2
 python-dateutil==2.9.0.post0
 pytz==2025.2
 reportlab==4.4.7
-scipy==1.16.3
 setuptools==78.1.1
 six==1.17.0
 SQLAlchemy==2.0.45
