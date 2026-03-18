@@ -40,7 +40,10 @@ def latex_to_png_eq(formula: str, fontsize=7):
         va='center'
     )
     ax.axis('off')
-    fig.tight_layout(pad=0)
+    try:
+        fig.tight_layout(pad=0)
+    except Exception:
+        pass  # ignore layout warning, continue rendering
 
     buf = io.BytesIO()
     fig.savefig(buf, format='png', dpi=250, bbox_inches='tight', transparent=True)
