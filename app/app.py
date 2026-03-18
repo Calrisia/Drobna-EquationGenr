@@ -11,7 +11,8 @@ from flask import Flask, Response, url_for, render_template, request, jsonify, r
 import os
 import matplotlib 
 matplotlib.use("Agg")
-from weasyprint import HTML as WeasyprintHTML
+from xhtml2pdf import pisa
+import io
 
 from datetime import date
 
@@ -527,7 +528,9 @@ def export_pdf_generate():
         )
 
     # ------------------ GENERATE PDF ------------------
-    pdf = WeasyprintHTML(string=html, base_url=request.base_url).write_pdf()
+    pdf_buffer = io.BytesIO()
+    pisa.CreatePDF(io.StringIO(html), dest=pdf_buffer)
+    pdf = pdf_buffer.getvalue()
 
     # Return PDF to client browser
     return Response(

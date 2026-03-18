@@ -26,7 +26,7 @@ narwhals==2.14.0
 numpy==2.3.5
 packaging==25.0
 pandas==2.3.3
-weasyprint
+xhtml2pdf
 pillow==12.0.0
 plotly==6.5.0
 psycopg2-binary
