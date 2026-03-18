@@ -23,7 +23,7 @@ class Equation(db.Model):
     id_equation = db.Column(db.Integer, primary_key=True)
     id_user = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     level = db.Column(db.String(10), nullable=False)
-    type = db.Column(db.String(10), nullable=False)
+    type = db.Column(db.Text, nullable=False)
     id_function = db.Column(db.Integer, db.ForeignKey('function.id'), nullable=True)
 
     equation = db.Column(db.String(100), nullable=False)
@@ -37,7 +37,7 @@ class Equation(db.Model):
 class Function(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     id_user = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
-    type = db.Column(db.String(10), nullable=False)
+    type = db.Column(db.Text, nullable=False)
     id_equation = db.Column(db.Integer, db.ForeignKey('equation.id_equation'), nullable=True)
 
     val_a = db.Column(db.Integer, nullable=False)

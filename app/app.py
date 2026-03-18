@@ -32,6 +32,11 @@ app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('POSTGRES_URL') or \
     os.environ.get('DATABASE_URL') or \
     'sqlite:///local.db'  # fallback for local dev only
+
+app.config['SQLALCHEMY_ENGINE_OPTIONS'] = {
+    'pool_pre_ping': True,
+    'pool_recycle': 300,
+}
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SECRET_KEY'] = 'ExpoLoGen'
 
