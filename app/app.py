@@ -28,7 +28,10 @@ pdfkit_config = pdfkit.configuration(wkhtmltopdf=WKHTMLTOPDF_PATH)
 app = Flask(__name__)
 
 # ---------------- CONFIG ----------------
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///expologen.db'
+
+app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('POSTGRES_URL') or \
+    os.environ.get('DATABASE_URL') or \
+    'sqlite:///local.db'  # fallback for local dev only
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SECRET_KEY'] = 'ExpoLoGen'
 
