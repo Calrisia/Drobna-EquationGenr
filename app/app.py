@@ -1,6 +1,6 @@
-from models import db, User, Equation, Function
-from forms import CreateEquationForm, CreateFunctionForm, RegistrationForm, LoginForm
-from utils import latex_to_png, latex_to_png_eq
+from app.models import db, User, Equation, Function
+from app.forms import CreateEquationForm, CreateFunctionForm, RegistrationForm, LoginForm
+from app.utils import latex_to_png, latex_to_png_eq
 
 from flask_migrate import Migrate
 from flask_login import LoginManager, current_user, login_required, login_user, logout_user
@@ -15,9 +15,9 @@ import pdfkit
 
 from datetime import date
 
-import math_engine.equations.logarithmic as log
-import math_engine.equations.exponential as ex
-import math_engine.functions.functions as func
+import app.math_engine.equations.logarithmic as log
+import app.math_engine.equations.exponential as ex
+import app.math_engine.functions.functions as func
 import sympy as sp
 
 
