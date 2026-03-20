@@ -85,18 +85,21 @@ class Substitution(Method):
                 left_side = func(left_side, n)
                 right_side = func(right_side, n)
 
-            if right_side != original_rs:
-                self.steps.append(sp.latex(sp.Eq(left_side, right_side)))
-                self.steps.append('\n')
+                if sp.latex(sp.Eq(left_side, right_side)) != sp.latex(sp.Eq(left_side, original_rs)):
+                    self.steps.append(sp.latex(sp.Eq(left_side, right_side)))
+                    self.steps.append('\n')
 
 
         # Optionally wrap in parentheses or scale both sides
+        l_old = left_side
+        r_old = right_side
         if random.choice([True, False]):
             scale = random.choice([2, 3, 0.5, -1])
             left_side = scale * left_side
             right_side = scale * right_side
-            self.steps.append(sp.latex(sp.Eq(left_side, right_side)))
-            self.steps.append('\n')
+            if sp.latex(sp.Eq(left_side, right_side)) != sp.latex(sp.Eq(l_old, r_old)):
+                self.steps.append(sp.latex(sp.Eq(left_side, right_side)))
+                self.steps.append('\n')
 
         self.equation = sp.Eq(left_side, right_side)
 
@@ -167,7 +170,7 @@ class Matching_bases(Method):
         
         right_side = self.val_r ** right_exp
         left_side = self.val_r ** symb_x
-        if symb_x != sp.symbols('x'):
+        if sp.latex(symb_x) != sp.latex(sp.symbols('x')):
             self.steps.append(sp.latex(sp.Eq(left_side, right_side)))
             self.steps.append('\n')
         
@@ -183,7 +186,7 @@ class Matching_bases(Method):
             right_side = function(right_side, n)
             left_side = function(left_side, n)
         
-        if right_side != old_r or left_side != old_l:
+        if sp.latex(right_side) != sp.latex(old_r) or sp.latex(left_side) != sp.latex(old_l):
             self.steps.append(sp.latex(sp.Eq(left_side, right_side)))
             self.steps.append('\n')
         self.equation = sp.Eq(left_side, right_side)
@@ -254,16 +257,20 @@ class Logarithm(Method):
         self.number_left = self.number_left ** symb_x
 
         step = sp.Eq(self.number_left, self.number_right, evaluate=False)
-        self.steps.append(sp.latex(step))
-        self.steps.append('\n')
+        if sp.latex(step) != sp.latex(self.equation):
+            self.steps.append(sp.latex(step))
+            self.steps.append('\n')
 
+        last = sp.latex(step)
         for function in modifs_base_signs:
             n = random.choice([1,2,4,5])
             self.number_right = function(self.number_right, n)
             self.number_left = function(self.number_left, n)
         
-        self.steps.append(sp.latex(sp.Eq(self.number_left, self.number_right)))
-        self.steps.append('\n')
+        if sp.latex(sp.Eq(self.number_left, self.number_right)) != last:
+            self.steps.append(sp.latex(sp.Eq(self.number_left, self.number_right)))
+            self.steps.append('\n')
+            last = sp.latex(sp.Eq(self.number_left, self.number_right))
         self.equation = sp.Eq(self.number_left, self.number_right)
 
     def get_equation(self):

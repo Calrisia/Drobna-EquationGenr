@@ -207,7 +207,7 @@ class Substitution(Method):
                 left_side = func(left_side, n)
                 right_side = func(right_side, n)
 
-        if right_side != original_rs:
+        if sp.latex(right_side) != sp.latex(original_rs):
             self.steps.append(sp.latex(sp.Eq(left_side, right_side)))
             self.steps.append('\n')
 
